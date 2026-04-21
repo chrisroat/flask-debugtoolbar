@@ -167,6 +167,7 @@ class SQLAlchemyDebugPanel(DebugPanel):
 def sql_select(explain: bool = False) -> str:
     statement, params = load_query(request.args["query"])
     engine = current_app.extensions["sqlalchemy"].engine
+    session = current_app.extensions["sqlalchemy"].session
 
     if explain:
         if engine.driver == "pysqlite":
@@ -174,8 +175,7 @@ def sql_select(explain: bool = False) -> str:
         else:
             statement = f"EXPLAIN\n{statement}"
 
-    with engine.connect() as connection:
-        result = connection.exec_driver_sql(statement, params)
+    result = session.connection().exec_driver_sql(statement, params)
     return g.debug_toolbar.render(  # type: ignore[no-any-return]
         "panels/sqlalchemy_select.html",
         {
