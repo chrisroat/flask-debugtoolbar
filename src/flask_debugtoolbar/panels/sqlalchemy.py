@@ -173,7 +173,7 @@ def sql_select(explain: bool = False) -> str:
         if engine.driver == "pysqlite":
             statement = f"EXPLAIN QUERY PLAN\n{statement}"
         else:
-            statement = f"EXPLAIN\n{statement}"
+            statement = f"EXPLAIN (ANALYZE, BUFFERS)\n{statement}"
 
     result = session.connection().exec_driver_sql(statement, params)
     return g.debug_toolbar.render(  # type: ignore[no-any-return]
